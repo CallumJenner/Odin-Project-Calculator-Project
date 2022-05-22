@@ -28,43 +28,49 @@ function operate(num1, num2, operator) {
 }
 
 const buttons = document.getElementsByClassName("calc-button");
+const display = document.getElementById("output-screen");
 
-let inputValue;
-let currentTotal = 0;
-let newValue;
-let wasLastInputOperator = true;
+let currentOperator;
+let currentValue = 0;
+let previousValue = 0;
 
 for (i of buttons) {
     let selectedButton;
     i.addEventListener('click', (e) => {
-        //console.log(e.target.value)
 
         const isOperator = e.target.classList.contains("calc-operator");
-        const calcOutput = document.getElementById("output-screen");
 
-        if (wasLastInputOperator) {
-            calcOutput.textContent = "";
+        if (display.textContent == "0" || display.textContent == previousValue) {
+            display.textContent = "";
+        }
+
+        if (e.target.id == "calc-clear") {
+            currentOperator = undefined;
+            currentValue = 0;
+            previousValue = 0;
+            display.textContent = 0;
         }
 
         if (isOperator) {
-            if (e.target.value == "calc-equals") {
-                calcOutput.textContent = currentTotal
+            if (currentOperator == undefined) {
+                currentOperator = e.target.value;
+                previousValue = display.textContent;
+                console.log(`prev: ${previousValue}`);
+                display.textContent = previousValue;
             } else {
-                newValue = calcOutput.textContent;
-                inputValue = null;
-                //calcOutput.textContent = e.target.value;
-                wasLastInputOperator = true;
-
-                let currentVal = operate(Number(currentTotal), Number(newValue), e.target.value);
-
-                currentTotal = Number(currentVal);
-                calcOutput.textContent = currentTotal;
+                currentValue = Number(display.textContent)
+                console.log(`Prev: ${previousValue} - Curr: ${currentValue} - Oper: ${currentOperator}`);
+                let summedValue = operate(Number(previousValue), Number(currentValue), currentOperator);
+                console.log(summedValue);
+                currentOperator = e.target.value;
+                previousValue = summedValue;
+                display.textContent = summedValue;
             }
 
         } else {
-            inputValue = e.target.value;
-            calcOutput.textContent += inputValue;
-            wasLastInputOperator = false;
+            display.textContent += e.target.value;
         }
+
+
     })
 }
