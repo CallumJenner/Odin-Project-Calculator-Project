@@ -30,9 +30,12 @@ function operate(num1, num2, operator) {
 const buttons = document.getElementsByClassName("calc-button");
 const display = document.getElementById("output-screen");
 
-let currentOperator;
+let currentOperator = "C";
 let currentValue = 0;
 let previousValue = 0;
+let decimalUsed = false;
+let selectedButton;
+
 
 for (i of buttons) {
     let selectedButton;
@@ -40,20 +43,29 @@ for (i of buttons) {
 
         const isOperator = e.target.classList.contains("calc-operator");
 
+        selectedButton = e.target.value;
+
         if (display.textContent == "0" || display.textContent == previousValue) {
             display.textContent = "";
         }
 
-        if (e.target.id == "calc-clear") {
-            currentOperator = undefined;
-            currentValue = 0;
-            previousValue = 0;
-            display.textContent = 0;
+        console.log(`target is ${selectedButton}`);
+        if (selectedButton == "calc-decimal") {
+            console.log("calc dec")
+
+            if (decimalUsed == true) {
+                selectedButton = "";
+            } else {
+                selectedButton = ".";
+            }
+
+            decimalUsed = true;
+
         }
 
         if (isOperator) {
-            if (currentOperator == undefined) {
-                currentOperator = e.target.value;
+            if (currentOperator == "C") {
+                currentOperator = selectedButton;
                 previousValue = display.textContent;
                 console.log(`prev: ${previousValue}`);
                 display.textContent = previousValue;
@@ -62,15 +74,28 @@ for (i of buttons) {
                 console.log(`Prev: ${previousValue} - Curr: ${currentValue} - Oper: ${currentOperator}`);
                 let summedValue = operate(Number(previousValue), Number(currentValue), currentOperator);
                 console.log(summedValue);
-                currentOperator = e.target.value;
+                if (selectedButton == "calc-equals") {
+                    currentOperator = "+";
+                } else {
+                    currentOperator = selectedButton;
+                }
                 previousValue = summedValue;
                 display.textContent = summedValue;
             }
 
+            decimalUsed = false;
+
         } else {
-            display.textContent += e.target.value;
+            display.textContent += selectedButton;
         }
 
+
+        if (e.target.id == "calc-clear") {
+            currentOperator = "C";
+            currentValue = 0;
+            previousValue = 0;
+            display.textContent = 0;
+        }
 
     })
 }
